@@ -1,1 +1,3 @@
 VectorSpace
+*.pyc
+VectorSpace.h5
