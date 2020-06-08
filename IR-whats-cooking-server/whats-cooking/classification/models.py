@@ -59,8 +59,8 @@ class Dataset(models.Model):
 
 
 class ModelVectorSpace(models.Model):
-    data = PickledObjectField()
-    status = models.BooleanField(default=False, name='status')
+    data = PickledObjectField(null=True)
+    status = models.BooleanField(default=False, name='status', null=True)
     id = models.DateTimeField(
         auto_now_add=True, primary_key=True)
     dataset = models.ForeignKey(
@@ -80,7 +80,7 @@ class ModelVectorSpace(models.Model):
 
 
 class ClassificationMlModel(models.Model):
-    model = PickledObjectField()
+    model_path = models.CharField(name='path', null=True, max_length=255)
     id = models.DateTimeField(auto_now_add=True, primary_key=True)
     time_created = models.DateTimeField(default=now)
     dataset = models.ForeignKey(

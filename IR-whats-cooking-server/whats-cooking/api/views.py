@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 import os
-from .helpers import get_knn_label, JSONDocToVec, build_ml_model
+from .helpers import get_ml_label, JSONDocToVec, build_ml_model
 from inverted_index.views import DocumentRetreival
 from classification.models import ModelVectorSpace, DISTANCE_FORMULAS, KNNClasification, ClassificationMlModel
 
@@ -29,19 +29,20 @@ class Test(View):
 
 class Ingredients(View):
     def get(self, request):
-        limit = request.GET.get('limit', 0)
-        offset = request.GET.get('offset', 0)
+        limit = int(request.GET.get('limit', 0))
+        offset = int(request.GET.get('offset', 0))
 
-        mvs = ModelVectorSpace.objects.filter(dataset='whats-cooking').all()[0]
+        mvs = ModelVectorSpace.objects.filter(
+            dataset__dataset_name='whats-cooking').latest()
         dv = mvs.data
-        print(dv_file)
-        length_ingredients = len(dv.Ingredients)
+
+        length_ingredients = len(dv.ingredients)
         if (offset >= length_ingredients):
             return JsonResponse({'status': False, 'message': 'Offset Out Bound', 'data': []})
         if (offset+limit >= length_ingredients):
-            ingredients = dv.Ingredients[offset:]
+            ingredients = list(dv.ingredients)[offset:]
             return JsonResponse({'status': True, 'message': 'ingredients', 'data': ingredients})
-        ingredients = dv.Ingredients[offset:offset+limit]
+        ingredients = list(dv.ingredients)[offset:offset+limit]
 
         return JsonResponse({'status': True, 'message': 'ingredients', 'data': ingredients})
 
@@ -98,17 +99,17 @@ class PredictionEngine(View):
             result = []
             # print(request.POST)
             if request.POST['query'] == '':
-                raise ValueError('Invalid Text Query')
+                raise ValueError('Invalid Ingredients Query')
 
-            result = get_knn_label(
-                query=request.POST['query'], k=int(request.POST['k']), dataset=request.POST['dataset'])
+            result = get_ml_label(
+                query=request.POST['query'].split(','), dataset=request.POST['dataset'], ml_model_type=model_name)
             # print(type(result))
             # print(result)
 
             # res = result.occurrance
             # doc_ids = list(map(lambda pos: pos,result.occurrance.keys()))
 
-            return JsonResponse({'status': True, 'message': 'Query Result',  'type': 'label', 'result': result}, status=200)
+            return JsonResponse({'status': True, 'message': 'Query Result',  'type': 'label', 'result': result[0]}, status=200)
             # else:
             #     return JsonResponse({'status': True, 'message': 'Something Went Wrong', 'result': list(result), 'type': 'Unknown'}, status=200)
 

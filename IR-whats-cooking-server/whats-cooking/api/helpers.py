@@ -22,6 +22,7 @@ import scipy
 FILE_PATH = os.path.dirname(__file__) + '../../data/'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STOPWORD_PATH = ('Stopword-List.txt')
+MODEL_DIR = os.path.join(BASE_DIR, 'ml_models')
 # Remove Punctuation
 
 printable = set(string.printable)
@@ -181,14 +182,19 @@ class JSONDocToVec(object):
 
     def get_query_vector(self, query_terms):
         ps = PorterStemmer()
-        query_vector = pd.Series(self.data.T[0])
+        pd_data = pd.DataFrame(self.data.toarray())
+        query_vector = pd.Series(pd_data.T[0])
+        # print(query_vector.index)
         query_terms = [ps.stem(word.lower()) for word in query_terms]
         for term in query_terms:
             if term in self.vocab_index.keys():
                 if self.vocab_index[term] in self.idf.index:
-                    query_vector.loc[self.vocab_index[term]] += 1
+                    # print(term)
+                    query_vector.loc[self.idf.index.get_loc(
+                        self.vocab_index[term])] += 1
+#         print(query_vector.col[query_vector > 0])
         for index in query_vector.index[query_vector > 0]:
-            query_vector.loc[index] *= self.idf.loc[index]
+            query_vector.iloc[index] *= self.idf.iloc[index]
         return query_vector
 
     def load_stop_words(self):
@@ -212,47 +218,6 @@ def accuracy(y_test, pred):
     return len([1 for p, y in zip(pred, y_test) if p == y]) / len(pred) * 100
 
 
-class KNNClassifier():
-    def __init__(self, neighbors=3, distance_formula=euclidian_distance):
-        self.distance_formula = distance_formula
-        self.neighbors = neighbors
-        self.X_train = []
-        self.y_train = []
-
-    def fit(self, X, y):
-        self.X_train = X
-        self.y_train = y
-
-    def predict(self, X_test, k=3):
-        self.neighbors = k
-        pred = []
-        for index, test_row in X_test.iterrows():
-            print(index)
-            clear_output(wait=True)
-            if self.distance_formula == euclidian_distance:
-                pred.append(
-                    self.X_train.apply(
-                        (lambda row: self.distance_formula(row, test_row)),
-                        axis=1).sort_values(ascending=True))
-            else:
-                pred.append(
-                    self.X_train.apply(
-                        (lambda row: self.distance_formula(row, test_row)),
-                        axis=1).sort_values(ascending=False))
-
-        new_pred = [x[:self.neighbors] for x in pred]
-        label_pred = []
-        for indexes in new_pred:
-            labels = []
-            #     print(indexes)
-            for index, value in indexes.items():
-                #         print(index)
-                #         print(y[index])
-                labels.append(self.y_train[index])
-            label_pred.append(Counter(labels).most_common(1)[0][0])
-        return label_pred
-
-
 def build_ml_model(dataset, train_size, test_size, ml_model_type, re_index, **kwargs):
     dataset_object, created = Dataset.objects.get_or_create(
         dataset_name=dataset)
@@ -260,7 +225,7 @@ def build_ml_model(dataset, train_size, test_size, ml_model_type, re_index, **kw
     if created:
         dataset_object.dataset_path = 'whats-cooking'
         dataset_object.save()
-    if True:
+    if len(ModelVectorSpace.objects.filter(dataset=dataset_object)) == 0:
         dataset_object = Dataset.objects.filter(dataset_name=dataset).latest()
         DATA_DIR = os.path.join(BASE_DIR, 'data')
         print(dataset_object)
@@ -299,7 +264,7 @@ def build_ml_model(dataset, train_size, test_size, ml_model_type, re_index, **kw
     #     knn = KNNClassifier(distance_formula=euclidian_distance)
     print('Train Test Split Completed')
     if ml_model_type == 'RandomForestClassifier':
-        ml_model = RandomForestClassifier(n_jobs=-1)
+        ml_model = RandomForestClassifier()
 
     ml_model.fit(X_train, y_train)
     pred = ml_model.predict(X_test)
@@ -309,7 +274,8 @@ def build_ml_model(dataset, train_size, test_size, ml_model_type, re_index, **kw
     cmm = ClassificationMlModel(accuracy=ml_model_accuracy,
                                 ml_model_type=ml_model_type, train_size=train_size, test_size=test_size)
     print('Creating DB Model ')
-    cmm.model = ml_model
+    joblib.dump(ml_model, f'{MODEL_DIR}\{ml_model_type}', compress=3)
+    cmm.path = f'{MODEL_DIR}\{ml_model_type}'
     print('1')
     cmm.dataset = dataset_object
     print('2')
@@ -320,18 +286,21 @@ def build_ml_model(dataset, train_size, test_size, ml_model_type, re_index, **kw
     return True
 
 
-def get_knn_label(query, k, dataset):
+def get_ml_label(query, dataset, ml_model_type):
     text = str(query)
     try:
         query_terms = [clean_word(word)
-                       for word in re.split('[.\s\n\r,?!:;-]', text)]
+                       for word in query]
     except ValueError as e:
         raise ValueError('Invalid Query Syntax')
+    print(query_terms)
     dataset_object = Dataset.objects.filter(dataset_name=dataset).latest()
-    knnM = KNNClasification.objects.filter(dataset=dataset_object).latest()
-    knn = knnM.model
+    cmm = ClassificationMlModel.objects.filter(
+        dataset=dataset_object, ml_model_type=ml_model_type).latest()
+    ml_model = joblib.load(f'{MODEL_DIR}\{cmm.path}')
+
     mvs = ModelVectorSpace.objects.filter(dataset=dataset_object).latest()
     dv = mvs.data
     ar = dv.get_query_vector(query_terms)
-    label = knn.predict(pd.DataFrame([ar]), k)
+    label = ml_model.predict([ar])
     return label
