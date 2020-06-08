@@ -13,8 +13,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 # Admin Password : adminhassanira
 
 
+import dj_database_url
 import os
 import nltk
+from dotenv import load_dotenv
+load_dotenv(".env")
 nltk.download('wordnet')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -30,8 +33,8 @@ SECRET_KEY = ')p&jce&m=t(dl@a0fdrer4rhy-8cj0!ixguxa%d^1jlly!c+h0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['whats-cooking.herokuapp.com', '127.0.0.1', 'localhost']
-
+# ALLOWED_HOSTS = ['whats-cooking-ir.herokuapp.com', '127.0.0.1', 'localhost', '']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -45,7 +48,8 @@ INSTALLED_APPS = [
     'inverted_index',
     'vsm',
     'classification',
-    'clustering'
+    'clustering',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -83,27 +87,32 @@ WSGI_APPLICATION = 'whats-cooking.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 
-if os.environ.get('environment') == 'dev':
+# if os.environ.get('environment') == 'dev':
 
-    print('Using SQLITE')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+print('Using SQLITE')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    print('Using PostGreSQl')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'd59voji5umm8f3',
-            'USER': 'arlneesalzqavt',
-            'PASSWORD': '93fbf0758b0ec113dff06e9b909b028b9c457c257acb54a509c5dc6b8ca632a1',
-            'HOST': 'ec2-35-169-254-43.compute-1.amazonaws.com',
-            'PORT': '5432',
-        }
-    }
+}
+
+# if os.environ.get('DATABASE_URL') != None:
+#     print('DB URL : ', os.environ.get('DATABASE_URL')[:10])
+#     DATABASES['default'] = dj_database_url.config(
+#         default=os.environ.get('DATABASE_URL'))
+# else:
+# print('Using PostGreSQl')
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'd59voji5umm8f3',
+#         'USER': 'arlneesalzqavt',
+#         'PASSWORD': '93fbf0758b0ec113dff06e9b909b028b9c457c257acb54a509c5dc6b8ca632a1',
+#         'HOST': 'ec2-35-169-254-43.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 

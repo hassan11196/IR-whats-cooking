@@ -4,11 +4,24 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
+pylint-django = "*"
 
 [packages]
+jupyter = "*"
 numpy = "*"
+ipython = "*"
+nltk = "*"
+flask = "*"
+django = "*"
+django-picklefield = "*"
+datetime = "*"
 pandas = "*"
-joblib = "*"
+psycopg2 = "*"
+dj-database-url = "*"
+python-dotenv = "*"
+scipy = "*"
+sklearn = "*"
 
 [requires]
 python_version = "3.7"
