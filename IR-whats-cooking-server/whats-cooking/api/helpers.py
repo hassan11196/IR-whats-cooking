@@ -8,8 +8,6 @@ from nltk.stem import PorterStemmer
 import random
 from copy import deepcopy
 import numpy as np
-from IPython.display import clear_output
-from IPython.core.interactiveshell import InteractiveShell
 import pickle
 import os
 import string
