@@ -295,7 +295,7 @@ def get_ml_label(query, dataset, ml_model_type):
     dataset_object = Dataset.objects.filter(dataset_name=dataset).latest()
     cmm = ClassificationMlModel.objects.filter(
         dataset=dataset_object, ml_model_type=ml_model_type).latest()
-    ml_model = joblib.load(f'{MODEL_DIR}\{cmm.path}')
+    ml_model = joblib.load(f'{MODEL_DIR}/{cmm.path}')
 
     mvs = ModelVectorSpace.objects.filter(dataset=dataset_object).latest()
     dv = mvs.data
