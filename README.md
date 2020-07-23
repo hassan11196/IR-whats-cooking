@@ -3,43 +3,39 @@
 Kaggle is an online platform for hosting data science competitions. On September
 9, Kaggle opened a contest called “What’s Cooking?”. The goal of this contest
 is to predict the type of a cuisine (e.g. “Chinese” or “Mexican”) from the list of
-ingredients in a recipe. 
+ingredients in a recipe.
 In this [paper](Whats%20Cooking.pdf), Kevin K. Do and his team describes their methodology for training an
-algorithm to make such predictions, We implemented the paper in a Jupyter Notebook and Developed a Web Application that can predict cuisine types given the ingredients list. 
-
-
+algorithm to make such predictions, We implemented the paper in a Jupyter Notebook and Developed a Web Application that can predict cuisine types given the ingredients list.
 
 ## Files:
+
 ### Jupyter Notebook:
+
 The Notebook Contains a Implementation of the [paper](./Whats%20Cooking.pdf).
 
 - Check Notebook : [IR-A3-K173654.ipynb](./IR-whats-cooking-proto-2.ipynb)
 
-
-
 ### Web System:
-A Web Application is hosted at  [https://whats-cooking-ir.netlify.app/](https://whats-cooking-ir.netlify.app/) .
 
-- Check Folder for Web Interface Code : IR-WEB-A3 
-    - Repo Link : [Click Here](https://github.com/hassan11196/IR-whats-cooking-WEB)
+A Web Application is hosted at [https://whats-cooking-ir.netlify.app/](https://whats-cooking-ir.netlify.app/) .
 
+- Check Folder for Web Interface Code : IR-WEB-A3
+  - Repo Link : [Click Here](https://github.com/hassan11196/IR-whats-cooking-WEB)
 
 ### ScreenShots:
 
 - ![](screenshots/Annotation%202020-07-23%20082642.png)
 - ![](screenshots/Annotation%202020-07-23%20082556.png)
 
-
 ### Team:
 
-| [![Noman Anjum](https://github.com/NomanAnjum09.png?size=100)](https://github.com/NomanAnjum09) | [![Hassan Ahmed](https://github.com/hassan11196.png?size=100)](https://github.com/hassan11196) |
-| :---------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------: |
-| [Noman Anjum](https://github.com/NomanAnjum09)                                                  |                         [Hassan Ahmed](https://github.com/hassan11196)                         |
-
+| [![Noman Anjum](https://github.com/NomanAnjum09.png?size=100)](https://github.com/NomanAnjum09) | [![Hassan Ahmed](https://github.com/hassan11196.png?size=100)](https://github.com/hassan11196) | [![Ahsan Ali](https://github.com/MuhammadAichee.png?size=100)](https://github.com/MuhammadAichee) |
+| :---------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------: |
+| [Noman Anjum](https://github.com/NomanAnjum09)                                                  |                         [Hassan Ahmed](https://github.com/hassan11196)                         |                                                    [Ahsan Ali](https://github.com/MuhammadAichee) |
 
 ### References:
-[https://www.kaggle.com/c/whats-cooking/](https://www.kaggle.com/c/whats-cooking/)
 
+[https://www.kaggle.com/c/whats-cooking/](https://www.kaggle.com/c/whats-cooking/)
 
 ### Built Using:
 
@@ -60,6 +56,5 @@ A Web Application is hosted at  [https://whats-cooking-ir.netlify.app/](https://
 <br />
 
 ### Template:
+
 - [electron react boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
-
-
